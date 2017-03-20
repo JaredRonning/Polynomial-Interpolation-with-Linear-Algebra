@@ -1,0 +1,65 @@
+format long;
+lengthsAreSame = 0;
+% User must enter a vector of x values and a vector of y values of same
+% length. Vectors must be row vectors (1 by n). User must usually enclose  
+% values in square backets. e.g. [1 2 3 4]. Error is measured by using the  
+% infinity norm.
+while (lengthsAreSame == 0 || size(xValues, 1) ~= 1 || size(yValues, 1) ~= 1)
+    xValues = input('Enter x values: ');
+    yValues = input('Enter y values: ');
+    lengthsAreSame = length(xValues) == length(yValues);
+end
+
+[A, coef] = coefficients(xValues, yValues);
+residual = A*coef - yValues';
+error = norm(abs(residual), inf);
+disp(['Error: ', num2str(error)]);
+
+%Iterative improvement:
+%We want to solve Ax = y and attain solution xhat.
+%We let r = Axhat - y and solve Ae = r
+%We let x = xhat - e so that Ax = Axhat - r  = y
+while (input('Would you like to iteratively improve the solution? 1 for yes, 0 for no: ') == 1)
+    e = A\residual;
+    coef = coef - e;
+    residual = A*coef - yValues';
+    error = norm(abs(residual), inf);
+    disp(['Error after iterative improvement: ', num2str(error)]);
+end
+
+%Construct and display polynomial
+%First prints the sign. Then prints the coefficient unless coefficient is 0
+%and only prints coefficient of +/- 1 if it's the constant term.
+%Prints x if not the constant term. Prints power of x if not the linear
+%term. Note: won't print the zero polynomial.
+degree = length(xValues) - 1;
+fprintf('f(x) = ');
+for n = 1:(degree + 1)
+    if (coef(n) ~= 0)
+        if (coef(n) > 0)
+            if (n > 1)
+            fprintf(' + ');
+            end
+        end
+        if (coef(n) < 0)
+            fprintf(' - ');
+        end
+        if (abs(coef(n)) ~= 1)
+            fprintf(num2str(abs(coef(n)),15));
+        end
+        if (abs(coef(n)) == 1 && n == degree + 1)
+            fprintf(num2str(abs(coef(n)),15));
+        end
+        if (n ~= degree + 1)
+            if (abs(coef(n)) == 1)
+                fprintf('x');
+            else
+                fprintf('*x');
+            end
+            if (n ~= degree)
+                fprintf(['^', num2str(degree + 1 - n)]);
+            end
+        end
+    end
+end
+fprintf('\n');
