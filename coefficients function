@@ -1,0 +1,16 @@
+function [A, coef] = coefficients(xValues, yValues)
+%Finds the n coefficients of a degree n - 1 polynomial using n nodes. Also
+%returns the corresponding matrix. If computed exactly, then A*coef will
+%equal yValues'. 
+degree = length(xValues) - 1; %Degree of polynomial
+A = zeros(degree + 1, degree + 1);
+
+for row = 1:(degree + 1)
+    xVal = xValues(row);
+    for col = 1:(degree + 1)
+        A(row, col) = xVal^(degree + 1 - col);
+    end
+end
+coef = A\yValues';
+end
+
